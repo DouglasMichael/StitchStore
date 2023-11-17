@@ -64,8 +64,8 @@ app.get('/api/v1/produtos', (req,res) => {
         if(error){
             console.log(error)
         }
-
-        res.json(result)
+    }).then(response =>{
+        res.json(response[0])
     })
 })
 
