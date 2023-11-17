@@ -3,10 +3,6 @@ import { useNavigation } from '@react-navigation/native';
 const Home = () => {
     const navigation = useNavigation();
 
-    const handleNavigateToFavoritos = () => {
-        navigation.navigate('Favoritos'); 
-    };
-
     const handleNavigateToNotificacao = () => {
         navigation.navigate('Notificacao');
     };
@@ -28,10 +24,10 @@ const Home = () => {
                     </TouchableOpacity>
                     <TextInput placeholder='Search' style={{width: "100%", height: "100%"}}/>
                 </View>
-                <TouchableOpacity onPress={handleNavigateToFavoritos}>
+                <TouchableOpacity onPress={() => navigation.navigate('Favoritos')}>
                     <Image source={require('../../assets/icons/coracao.png')} style={{ width: 40, height: 40, }} />
                 </TouchableOpacity>
-                <TouchableOpacity onPress={handleNavigateToNotificacao}>
+                <TouchableOpacity onPress={() => navigation.navigate('Notificacao')}>
                     <Image source={require('../../assets/icons/carrinho.png')} style={{ width: 48, height: 44, }} />
                 </TouchableOpacity>
             </View>
@@ -46,7 +42,7 @@ const Home = () => {
 
                     <View style={{flexDirection: 'row', justifyContent: "space-between", alignItems: 'center', paddingVertical: 9, paddingHorizontal: 5}}>
                         <Text style={{fontSize: 16, fontWeight: 700}} >Todas as Categorias</Text>
-                        <TouchableOpacity>
+                        <TouchableOpacity onPress={() => navigation.navigate('Produtos')}>
                             <Image source={require('../../assets/icons/ir.png')} style={{width: 29, height: 29,}} />
                         </TouchableOpacity>
                     </View>
