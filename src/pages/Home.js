@@ -18,17 +18,14 @@ const Home = () => {
                 <TouchableOpacity>
                     <Image source={require("../../assets/icons/menu.png")} style={{width: 44, height: 44,}}/>
                 </TouchableOpacity>
-                <View style={{width: 223, height: 37, backgroundColor: "#83BAE3", borderRadius: 10, flexDirection: "row", alignItems: 'center',}}>
-                    <TouchableOpacity onPress={() => navigation.navigate("Frete")}>
-                        <Image source={require('../../assets/icons/lupa.png')} style={{width: 30, height: 30,}}/>
-                    </TouchableOpacity>
-                    <TextInput placeholder='Search' style={{width: "100%", height: "100%"}}/>
-                </View>
                 <TouchableOpacity onPress={() => navigation.navigate('Favoritos')}>
                     <Image source={require('../../assets/icons/coracao.png')} style={{ width: 40, height: 40, }} />
                 </TouchableOpacity>
                 <TouchableOpacity onPress={() => navigation.navigate('Notificacao')}>
-                    <Image source={require('../../assets/icons/carrinho.png')} style={{ width: 48, height: 44, }} />
+                    <Image source={require('../../assets/icons/notificacao.png')} style={{ width: 40, height: 40, }} />
+                </TouchableOpacity>
+                <TouchableOpacity onPress={() => navigation.navigate('Notificacao')}>
+                    <Image source={require('../../assets/icons/carrinho.png')} style={{ width: 40, height: 40, }} />
                 </TouchableOpacity>
             </View>
 

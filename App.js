@@ -11,6 +11,7 @@ import Home from "./src/pages/Home";
 import Notificacao from "./src/pages/Notificacoes";
 import FreteScreen from "./src/pages/Frete";
 import Produtos from "./src/pages/produtos";
+import Carrinho from "./src/pages/Carrinho";
 
 const Stack = createStackNavigator();
 
@@ -18,6 +19,16 @@ const App = () => {
   return (
     <NavigationContainer>
       <Stack.Navigator initialRouteName="Login">
+        {/* <Stack.Screen
+          name="Produtos"
+          component={Produtos}
+          options={{headerShown: false, title: "Home"}}
+        /> */}
+        <Stack.Screen
+          name="Carrinho"
+          component={Carrinho}
+          options={{ headerShown: false }}
+        />
         {/* <Stack.Screen
           name="Login"
           component={Login}
@@ -28,32 +39,27 @@ const App = () => {
           component={Cadastro}
           options={{headerShown: false, title: "Home"}}
         /> */}
-        <Stack.Screen
+        {/* <Stack.Screen
           name="Favoritos"
           component={Favoritos}
           options={{headerShown: false, title: "Home"}}
-          />
-        <Stack.Screen
-          name="Produtos"
-          component={Produtos}
-          options={{headerShown: false, title: "Home"}}
-          />
-        <Stack.Screen
+          /> */}
+        {/* <Stack.Screen
           name="EsqueciSenha"
           component={EsqueciSenha}
           options={{headerShown: false, title: "Home"}}
-          />
-        <Stack.Screen
+        /> */}
+        {/* <Stack.Screen
           name="Home"
           component={Home}
           options={{headerShown: false, title: "Home"}}
-          />
-        <Stack.Screen
+        /> */}
+        {/* <Stack.Screen
           name="Notificacao"
           component={Notificacao}
           options={{headerShown: false, title: "Home"}}
-        />
-        <Stack.Screen
+        /> */}
+        {/* <Stack.Screen
           name="Frete"
           component={FreteScreen}
           options={{
@@ -63,7 +69,7 @@ const App = () => {
               backgroundColor: '#F3D9F2',
             },
           }}
-        />
+        /> */}
       </Stack.Navigator>
     </NavigationContainer>
   );

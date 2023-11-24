@@ -11,7 +11,6 @@ const Produtos = () => {
     const navigation = useNavigation();
     const [ImageUrls, setImageUrls] = useState([])
     const [produtos, setProdutos] = useState("")
-    console.log(ImageUrls)
 
     useEffect(() =>{
         pegarProdutos()
@@ -41,28 +40,35 @@ const Produtos = () => {
 
         const value = await AsyncStorage.getItem('favoritos');
 
-        if (value !== null) {
-            var listaFavoritos = []
-            const existingItems = await AsyncStorage.getItem('favoritos');
-            if (JSON.parse(existingItems).length == undefined) {    
-                console.log(JSON.parse(existingItems).length)
-                listaFavoritos.push(JSON.parse(existingItems))
-            } else {
-                listaFavoritos = JSON.parse(existingItems)
-            }
-            listaFavoritos.push(produtos[index]);
-            AsyncStorage.setItem('favoritos', JSON.stringify(listaFavoritos))
-        } else {
-            AsyncStorage.setItem('favoritos', JSON.stringify(produtos[index]))
-        
-        }
+        const dadosExistente = value ? JSON.parse(value) : [];
 
+        const elementoJaExiste = dadosExistente.some(item => (
+            item.CodigoProduto === produtos[index].CodigoProduto
+        ));
+
+        if (!elementoJaExiste) {
+            dadosExistente.push(produtos[index]);
+        
+            AsyncStorage.setItem('favoritos', JSON.stringify(dadosExistente));
+          }
     }
 
-    // const teste = () =>{
-    //     fetch('file///C:/Users/Pichau/Desktop/Projeto_Michael_Adhayne/StitchStore/assets/imagens/Produto1.png').then(res => console.log(res))
+    const adicionarcarrinho = async (index) => {
+
+        const value = await AsyncStorage.getItem('carrinho');
+
+        const dadosExistente = value ? JSON.parse(value) : [];
+
+        const elementoJaExiste = dadosExistente.some(item => (
+            item.CodigoProduto === produtos[index].CodigoProduto
+        ));
+
+        if (!elementoJaExiste) {
+            dadosExistente.push(produtos[index]);
         
-    // }
+            AsyncStorage.setItem('carrinho', JSON.stringify(dadosExistente));
+          }
+    }
 
     return (
         <ScrollView style={{ backgroundColor: "#F3D9F2", width: "100%", height: "100%"}}>
@@ -73,7 +79,7 @@ const Produtos = () => {
                     <Image source={require("../../assets/icons/menu.png")} style={{ width: 44, height: 44, }} />
                 </TouchableOpacity>
                 <Text style={{ fontSize: 20, fontWeight: 700 }}>Todos os produtos</Text>
-                <TouchableOpacity onPress={() => navigation.navigate('Notificacao')}>
+                <TouchableOpacity onPress={() => navigation.navigate('Carrinho')}>
                     <Image source={require('../../assets/icons/carrinho.png')} style={{ width: 48, height: 44, }} />
                 </TouchableOpacity>
             </View>
@@ -86,7 +92,7 @@ const Produtos = () => {
                 {ImageUrls.length >0 ?
                 produtos.map((item, index) => {
                     return(
-                        <TouchableOpacity key={index} style={{ width: 180, marginTop: 28, flexDirection: "col", height:199, backgroundColor: "#ffffff", marginLeft:20, borderRadius:8, shadowColor: "#000", shadowOffset: {width:0, height:2}, shadowOpacity:0.25, shadowRadius: 3.84, elevation: 5}}>
+                        <TouchableOpacity key={index} style={{ width: 180, marginTop: 28, flexDirection: "col", height:199, backgroundColor: "#ffffff", marginLeft:20, borderRadius:8, shadowColor: "#000", shadowOffset: {width:0, height:2}, shadowOpacity:0.25, shadowRadius: 3.84, elevation: 5}} onPress={() => adicionarcarrinho(index)}>
                             <Image source={{uri: ImageUrls[index]}} style={{width: '100%', height: '70%', position: 'absolute'}} resizeMode='cover'/>
                             <TouchableOpacity onPress={() => adicionarFavoritos(index)}>
                                 <Image key={index} source={require('../../assets/icons/coracao.png')} style={{width: 40, height: 40, position: 'absolute', left: 140}} resizeMode='cover'/>

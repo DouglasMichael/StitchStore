@@ -4,23 +4,22 @@ import { useNavigation } from '@react-navigation/native';
 const Notificacao = () => {
     const navigation = useNavigation();
 
-    const handleNavigateToFavoritos = () => {
-        navigation.navigate('Favoritos'); 
-    };
-    const handleNavigateToHome = () => {
-        navigation.navigate('Home'); 
-    };
     return (
         <View style={{backgroundColor: "#F3D9F2", width: "100%", height: "100%",}}>
 
             <View style={{width: "100%", height: 81, flexDirection: "row", justifyContent: "space-around", alignItems: 'center', paddingTop: 50}}>
-                <TouchableOpacity  onPress={handleNavigateToHome}>
+                <TouchableOpacity  onPress={() => navigation.navigate("Home")}>
                     <Image source={require("../../assets/icons/menu.png")} style={{width: 44, height: 44,}}/>
                 </TouchableOpacity>
                 <Text style={{fontSize: 20, fontWeight: 700}}>Notificações</Text>
-                <TouchableOpacity onPress={handleNavigateToFavoritos}>
-                    <Image source={require('../../assets/icons/coracao.png')} style={{ width: 40, height: 40, }} />
-                </TouchableOpacity>
+                <View style={{flexDirection: "row", width: '20%', justifyContent: 'space-around',}}>
+                    <TouchableOpacity onPress={() => navigation.navigate("Favoritos")}>
+                        <Image source={require('../../assets/icons/coracao.png')} style={{ width: 40, height: 40, }} />
+                    </TouchableOpacity>
+                    <TouchableOpacity>
+                        <Image source={require('../../assets/icons/carrinho.png')} style={{ width: 48, height: 44, }} />
+                    </TouchableOpacity>
+                </View>
             </View>
 
             <View style={{width: "100%", height: 200, marginTop: 9, justifyContent: 'flex-end', alignItems: "center",}}>
