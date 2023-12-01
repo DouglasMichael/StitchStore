@@ -1,18 +1,16 @@
 const express = require("express")
 const jwt = require('jsonwebtoken')
-const fs = require('fs')
-const path = require('path')
 const app = express()
 require('dotenv').config()
 
 const db = require("./connection")
-const { error } = require("console")
+
 
 
 app.use(express.json(),(req, res, next)=> {
     res.header('Access-Control-Allow-Origin', 'http://localhost:19006'); // Isso permite qualquer origem (não seguro em produção).
     res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
-    res.header('Access-Control-Allow-Headers', 'Content-Type');
+    res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
     next();  
 })
 // app.post('/')
@@ -30,35 +28,6 @@ app.get('/api/v1/teste', AutenticateToken, (req, res) =>{
     // res.json(jsonTeste.filter(teste => teste.username === req.user.name))
 })
 
-app.post('/api/v1/add/produtos', (req, res) =>{
-
-    const diretorio = req.body.diretorio;
-    
-    fs.readdir(diretorio, (err, arquivos) => {
-        if (err) {
-            console.error('Erro ao ler o diretório:', err);
-            return;
-        }
-        
-        // Itera sobre os arquivos no diretório
-        arquivos.forEach((arquivo) => {
-            const caminhoArquivo = path.join(diretorio, arquivo);
-            
-            // Verifica se é um arquivo (não um subdiretório)
-            if (fs.statSync(caminhoArquivo).isFile()) {
-                const conteudo = fs.readFileSync(caminhoArquivo)
-                const sql = "INSERT INTO produto(nomeProduto, precoProduto, imagem) VALUES ('caneca personalizada', 39.90, ?)"
-                db.query({query: sql, values:[conteudo]},(error, result) => {
-                    if (error) {
-                        console.error('Erro ao inserir a imagem:', error);
-                    }
-                    res.send('Imagem inserida com sucesso no banco de dados.').status(201);
-                })
-            }
-        });
-    });
-})
-
 app.get('/api/v1/produtos', (req,res) => {
     db.query('SELECT * FROM produto', (error, result) => {
         if(error){
@@ -67,6 +36,53 @@ app.get('/api/v1/produtos', (req,res) => {
     }).then(response =>{
         res.json(response[0])
     })
+})
+app.get('/api/v1/produtos/:id', (req,res) => {
+    db.query(`SELECT * FROM produto WHERE CodigoProduto = ${req.params.id}`, (error, result) => {
+        if(error){
+            console.log(error)
+        }
+    }).then(response =>{
+        res.json(response[0])
+    })
+})
+
+app.post('/api/v1/pedidos', AutenticateToken, (req,res) => {
+    const date = new Date()
+    const total = req.body.total
+
+    db.query(`INSERT INTO pedido(usuario, dataPedido, TotalPedido, statusPedido) VALUES(${req.user.ID_Usuario}, '${date.toLocaleDateString().split('/').reverse().join('-')}', ${total}, 'Confirmado')`, (err, result) => {
+        if(err){
+            console.log(err)
+        }
+    }).then((response) => {
+        res.json(response[0])
+    })
+})
+app.get('/api/v1/pedidos', AutenticateToken, (req,res) => {
+    db.query(`SELECT * FROM pedido WHERE usuario = ${req.user.ID_Usuario} `, (err, result) => {
+        if(err){
+            console.log(err)
+        }
+    }).then((response) => {
+        res.send(response[0])
+    })
+})
+
+app.post('/api/v1/itens', (req,res) => {
+    const CodigoProduto = req.body.CodigoProduto
+    const CodigoPedido = req.body.CodigoPedido
+    const TotalXQuantidade = req.body.TotalXQuantidade
+    const Quantidade= req.body.Quantidade
+
+
+
+    db.query(`INSERT INTO produtospedidos(CodigoProduto, CodigoPedido, TotalXQuantidadeProdutosPedidos, QuantidadeProdutosPedidos) VALUES(${CodigoProduto}, ${CodigoPedido}, ${TotalXQuantidade}, ${Quantidade})`, (err,result) => {
+        if(err){
+            console.log(err)
+        }
+    })
+
 })
 
 

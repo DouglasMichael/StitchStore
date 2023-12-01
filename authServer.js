@@ -34,7 +34,7 @@ app.post('/api/v1/login', (req, res) =>{
         if(response[0][0] == undefined) return res.sendStatus(404)
 
         //criação do usuario para o TOKEN DE ACESSO
-        const user = { email: email, password: senha }
+        const user = { email: email, senha: senha, ID_Usuario:response[0][0].ID_Usuario }
 
         //ciração do TOKEN DE ACESSO com as informações passadas
         const accessToken = generateAcessToken(user)
@@ -68,7 +68,7 @@ app.post('/api/v1/token', (req, res) => {
         if(err) return res.sendStatus(403)
 
         //gerando o token de acesso com as informações passada anteriormente
-        const accessToken = generateAcessToken({ name: user.name, password: user.password })
+        const accessToken = generateAcessToken({ name: user.name, senha: user.senha })
         res.json({ accessToken: accessToken })
     })
 

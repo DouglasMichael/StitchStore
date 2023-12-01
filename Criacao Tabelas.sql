@@ -1,4 +1,6 @@
-use dbstich;
+create schema dbstitch;
+
+use dbstitch;
 CREATE TABLE usuario (
   ID_Usuario int primary key AUTO_INCREMENT,
   Nome varchar(200) NOT NULL collate utf8mb4_bin,
@@ -24,6 +26,7 @@ CREATE TABLE pedido (
   CodigoPedido int AUTO_INCREMENT primary key,
   usuario int not null,
   dataPedido date not null,
+  TotalPedido decimal(5,2) null,
   statusPedido enum('Cancelado', 'Entregue', 'Confirmado', 'Caminho'),
   FOREIGN KEY (usuario) REFERENCES usuario (ID_Usuario)
 );
@@ -32,8 +35,8 @@ CREATE TABLE produtospedidos (
   CodigoProdutoPedido int primary key AUTO_INCREMENT,
   CodigoProduto int not null,
   CodigoPedido int not null,
-  TotalProdutosPedidos decimal(5,2) not null,
+  TotalXQuantidadeProdutosPedidos decimal(5,2) null,
   QuantidadeProdutosPedidos int not null,
   FOREIGN KEY (CodigoPedido) REFERENCES pedido (CodigoPedido),
   FOREIGN KEY (CodigoProduto) REFERENCES produto (CodigoProduto)
-)
+);
