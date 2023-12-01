@@ -4,6 +4,8 @@ import React, {useState} from 'react';
 import { useEffect } from 'react';
 import { View, Text, Image, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 import { storage } from '../firebase.config';
+import { useNavigation } from '@react-navigation/native';
+import axios from 'axios';
 
 const ItemCompra = ({ item }) => {
     return (
@@ -23,11 +25,14 @@ const ItemCompra = ({ item }) => {
 };
 
 const Carrinho = () => {
+    const navigation = useNavigation();
     const [ImageUrls, setImageUrls] = useState([])
     const [produtos, setProdutos] = useState("")
+    const [PrecoTotal, setPrecoTotal] = useState(0)
 
     useEffect(() =>{
         pegarProdutos()
+        precoCarrinho()
     },[])
 
     const pegarProdutos = async() =>{
@@ -45,39 +50,83 @@ const Carrinho = () => {
  
         setImageUrls(listaUrl)
     }
-    // const { carrinhoItens } = route.params;
-    // const itensUnicos = {};
 
-    // carrinhoItens.forEach((item) => {
-    //     const key = item.nome;
-    //     if (!itensUnicos[key]) {
-    //         itensUnicos[key] = { ...item, quantidade: 0 };
-    //     }
-    //     itensUnicos[key].quantidade += 1;
-    // });
+    async function atualizarQuantidade(productId,quantidadeInt) {
+        const carrinho = JSON.parse(await AsyncStorage.getItem('carrinho'))
+        if (carrinho) {
+            const atualizadoCartItems = carrinho.map((item, index) => {
+                if (index === productId) {
+                    if (item.quantidade >=1) {
+                        if (quantidadeInt <0 && item.quantidade ==1 ) {
+                            return { ...item, quantidade: 1 };    
+                        }
+                        return { ...item, quantidade: item.quantidade + quantidadeInt };
+                    }
+                }
+    
+                return item;
+            });
+            await AsyncStorage.setItem('carrinho', JSON.stringify(atualizadoCartItems))
+            pegarProdutos()
+            precoCarrinho()
+        }
+    }
+    const precoCarrinho = async() => {
+        const carrinho = JSON.parse(await AsyncStorage.getItem('carrinho'))
+            var total = 0
+            carrinho.map((item) => {
+                total = total + (parseFloat(item.precoProduto) * parseFloat(item.quantidade))
+            })
+            setPrecoTotal(total)
+    }
 
-    // const itensUnicosArray = Object.values(itensUnicos);
-    // const [itensCarrinho, setItensCarrinho] = useState(itensUnicosArray);
+    const apagarCarrinho = async() =>{
+        if (await AsyncStorage.getItem('carrinho')) {   
+            await AsyncStorage.removeItem('carrinho')
+            alert("Carrinho apagado!")
+            navigation.navigate("Produtos")
+        }
+        else{
+    
+            alert("Você não possui um carrinho ainda!")
+        }
+    }
 
-    // const totalAPagar = itensUnicosArray.reduce((total, item) => {
-    //     const precoNumerico = parseFloat(item.preco.replace('R$', '').trim().replace(',', '.'));
-    //     const precoTotalItem = precoNumerico * item.quantidade;
-    //     return total + precoTotalItem;
-    // }, 0);
+    const fazerPedido = async() => {
+        const token = JSON.parse(await AsyncStorage.getItem('token')).accessToken
+        const carrinho = JSON.parse(await AsyncStorage.getItem('carrinho'))
+        try {
+            const pedido = await axios.post('http://10.109.83.7:3000/api/v1/pedidos/',{total: PrecoTotal}, {headers: {Authorization: `JWT ${token}`}})
+            carrinho.forEach(async(element) => {
+                const itens = await axios.post('http://10.109.83.7:3000/api/v1/itens/',{
+                    CodigoProduto: element.CodigoProduto,
+                    CodigoPedido: pedido.data,
+                    TotalXQuantidade: parseFloat(element.precoProduto) * element.quantidade,
+                    Quantidade: element.quantidade
+                })
+            });
+            alert("Pedido feito com sucesso!")
+            await AsyncStorage.removeItem('carrinho')
+            setImageUrls([])
+            setPrecoTotal(0)
 
-    // const limparCarrinho = () => {
-    //     setItensCarrinho([]); // Define o carrinho como um array vazio ao clicar em "Pagar"
-    // };
-
-   
+        } catch (error) {
+            console.log(error)
+        }
+    }
 
     return (
         <ScrollView style={styles.container}>
-            <Text style={styles.titulo}>Itens no Carrinho:</Text>
+            <View style={{ width: "100%", height: 81, flexDirection: "row", justifyContent: "space-around", alignItems: 'center' }}>
+               <TouchableOpacity  onPress={() => navigation.navigate("Home")}>
+                    <Image source={require("../../assets/icons/menu.png")} style={{width: 44, height: 44,}}/>
+                </TouchableOpacity>
+                <Text style={{ fontSize: 20, fontWeight: 700 }}>Todos os produtos</Text>
+                <TouchableOpacity onPress={() => navigation.navigate('Notificacao')}>
+                    <Image source={require('../../assets/icons/notificacao.png')} style={{ width: 40, height: 40, }} />
+                </TouchableOpacity>
+            </View>
             <View>
-                {/* {itensUnicosArray.map((item, index) => (
-                    <ItemCompra key={index} item={item} />
-                ))} */}
                   {ImageUrls.length >0 ?
                     produtos.map((item, index) => {
                     return(
@@ -87,6 +136,11 @@ const Carrinho = () => {
                             <View style={{marginLeft: 20}}>
                                 <Text style={{fontSize: 20, fontWeight:500}}>{item.nomeProduto}</Text>
                                 <Text style={{fontSize: 15, fontWeight:700, color:'#ED4667'}}>R$ {item.precoProduto}</Text>
+                                <View style={{flexDirection: 'row', alignItems: 'center',justifyContent: 'space-between', width: 128}}>
+                                    <TouchableOpacity onPress={() => atualizarQuantidade(index,-1)} style={{backgroundColor: '#ED4667', paddingHorizontal: 5, borderRadius: 8,}}><Text> - </Text></TouchableOpacity>
+                                    <Text style={{fontSize: 14}}>{item.quantidade}</Text>
+                                    <TouchableOpacity onPress={() => atualizarQuantidade(index,1)} style={{backgroundColor: '#ED4667', paddingHorizontal: 5, borderRadius: 8,}}><Text> + </Text></TouchableOpacity>
+                                </View>
                             </View>
                         </View>
                         <View style={{width: '100%', height: 1, backgroundColor: '#9d9d9d', marginVertical: 10,}} />
@@ -96,10 +150,15 @@ const Carrinho = () => {
             </View>
             <View style={styles.totalContainer}>
                 <View style={styles.line} />
-                {/* <Text style={styles.total}>Total a Pagar: R$ {totalAPagar.toFixed(2)}</Text> */}
-                <TouchableOpacity style={styles.botaoPagar}>
-                    <Text style={styles.textoBotao}>Pagar</Text>
-                </TouchableOpacity>
+                <Text style={styles.total}>Total a Pagar: R$ {PrecoTotal.toFixed(2)}</Text>
+                <View style={{flexDirection: 'row', width: 200, justifyContent: 'space-between',}}>
+                    <TouchableOpacity style={styles.botaoPagar} onPress={() => fazerPedido()}>
+                        <Text style={styles.textoBotao}>Pagar</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity style={styles.botaoPagar} onPress={() => apagarCarrinho()}>
+                        <Text style={styles.textoBotao}>limpar</Text>
+                    </TouchableOpacity>
+                </View>
             </View>
         </ScrollView>
     );
@@ -175,7 +234,6 @@ const styles = StyleSheet.create({
         color: '#ED4667',
     },
     botaoPagar: {
-        marginTop: 20,
         backgroundColor: '#ED4667',
         paddingHorizontal: 20,
         paddingVertical: 10,

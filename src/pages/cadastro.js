@@ -56,7 +56,7 @@ const Cadastro = () => {
 
   const Cadastrar = async () => {
     try {
-        const response = await axios.post("http://192.168.15.22:4000/api/v1/cadastro/",{
+        const response = await axios.post("http://10.109.83.7:4000/api/v1/cadastro/",{
             Nome: nome,
             Email: email,
             senha: password,

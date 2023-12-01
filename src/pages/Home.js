@@ -24,7 +24,7 @@ const Home = () => {
                 <TouchableOpacity onPress={() => navigation.navigate('Notificacao')}>
                     <Image source={require('../../assets/icons/notificacao.png')} style={{ width: 40, height: 40, }} />
                 </TouchableOpacity>
-                <TouchableOpacity onPress={() => navigation.navigate('Notificacao')}>
+                <TouchableOpacity onPress={() => navigation.navigate('Carrinho')}>
                     <Image source={require('../../assets/icons/carrinho.png')} style={{ width: 40, height: 40, }} />
                 </TouchableOpacity>
             </View>

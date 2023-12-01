@@ -20,7 +20,7 @@ const Produtos = () => {
         let listaProdutos = []
         var listaUrl = []
         try {
-            const response = await axios.get("http://10.109.83.5:3000/api/v1/produtos/")
+            const response = await axios.get("http://10.109.83.7:3000/api/v1/produtos/")
             listaProdutos = response.data
             setProdutos(response.data)
         } catch (error) {
@@ -48,9 +48,9 @@ const Produtos = () => {
 
         if (!elementoJaExiste) {
             dadosExistente.push(produtos[index]);
-        
             AsyncStorage.setItem('favoritos', JSON.stringify(dadosExistente));
           }
+          alert("Item adicionado aos favoritos!")
     }
 
     const adicionarcarrinho = async (index) => {
@@ -64,9 +64,10 @@ const Produtos = () => {
         ));
 
         if (!elementoJaExiste) {
-            dadosExistente.push(produtos[index]);
+            dadosExistente.push(produtos[index] = {CodigoProduto: produtos[index].CodigoProduto, nomeProduto: produtos[index].nomeProduto, precoProduto: produtos[index].precoProduto, quantidade: 1});
         
             AsyncStorage.setItem('carrinho', JSON.stringify(dadosExistente));
+            alert("Item adicionado ao carrinho!")
           }
     }
 
@@ -74,9 +75,8 @@ const Produtos = () => {
         <ScrollView style={{ backgroundColor: "#F3D9F2", width: "100%", height: "100%"}}>
 
             <View style={{ width: "100%", height: 81, flexDirection: "row", justifyContent: "space-around", alignItems: 'center' }}>
-                <TouchableOpacity
-                >
-                    <Image source={require("../../assets/icons/menu.png")} style={{ width: 44, height: 44, }} />
+                 <TouchableOpacity  onPress={() => navigation.navigate("Home")}>
+                    <Image source={require("../../assets/icons/menu.png")} style={{width: 44, height: 44,}}/>
                 </TouchableOpacity>
                 <Text style={{ fontSize: 20, fontWeight: 700 }}>Todos os produtos</Text>
                 <TouchableOpacity onPress={() => navigation.navigate('Carrinho')}>

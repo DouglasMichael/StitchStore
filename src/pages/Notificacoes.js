@@ -1,8 +1,29 @@
 import { View, Image, TouchableOpacity, TextInput, Text, ScrollView } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import axios from 'axios';
+import { useEffect } from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useState } from 'react';
 
 const Notificacao = () => {
     const navigation = useNavigation();
+    const[pedidos, SetPedidos] = useState([])
+
+    useEffect(() => {
+        buscarPedidos()
+    },[])
+
+    const buscarPedidos = async() =>{
+        const token = JSON.parse(await AsyncStorage.getItem('token')).accessToken
+        try {
+            const pedido = await axios.get('http://10.109.83.7:3000/api/v1/pedidos/',{headers: {Authorization: `JWT ${token}`}})
+            console.log(pedido.data)
+            SetPedidos(pedido.data)
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
 
     return (
         <View style={{backgroundColor: "#F3D9F2", width: "100%", height: "100%",}}>
@@ -16,7 +37,7 @@ const Notificacao = () => {
                     <TouchableOpacity onPress={() => navigation.navigate("Favoritos")}>
                         <Image source={require('../../assets/icons/coracao.png')} style={{ width: 40, height: 40, }} />
                     </TouchableOpacity>
-                    <TouchableOpacity>
+                    <TouchableOpacity onPress={() => navigation.navigate("Carrinho")}>
                         <Image source={require('../../assets/icons/carrinho.png')} style={{ width: 48, height: 44, }} />
                     </TouchableOpacity>
                 </View>
@@ -51,13 +72,17 @@ const Notificacao = () => {
                 <TouchableOpacity><Text style={{fontWeight: 700}}>Ler Tudo</Text></TouchableOpacity>
             </View>
 
-            <TouchableOpacity style={{paddingLeft: 16, flexDirection: "row", marginTop: 20}}>
-                    <Image source={require("../../assets/produto3.png")} style={{width: 60, height: 87}}/>
+            {pedidos.length > 0 ? pedidos.map((item) => (
+                <TouchableOpacity style={{paddingLeft: 16, flexDirection: "row", marginTop: 20}}>
+                    <Image source={require("../../assets/pacote.jpg")} style={{width: 80, height: 80}}/>
                     <View style={{paddingLeft: 16, width: "80%", justifyContent: 'space-around',}}>
-                        <Text style={{fontSize: 12, fontWeight: 700, }}>Enviado</Text>
-                        <Text style={{fontSize: 12, fontWeight: 400}}>Um pacote do pedido 230804Q8RUHSXP foi enviado por Sandi | iPhone Case & Airpods Case através do Expresso padrão. A ID de rastramento do pacote é NB559597750BR.             </Text>
+                        <Text style={{fontSize: 18, fontWeight: 700, }}>{item.statusPedido}</Text>
+                        <Text style={{fontSize: 12, fontWeight: 400}}>Um pacote do pedido {item.dataPedido.split('-').join("") + item.CodigoPedido} foi enviado através do Expresso padrão.</Text>
                     </View>
                 </TouchableOpacity>
+
+            )) : null}
+
 
             
 

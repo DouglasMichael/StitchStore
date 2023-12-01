@@ -19,7 +19,7 @@ const Login = () => {
 
   const Logar = async () => {
     try {
-      const response = await axios.post("http://192.168.15.22:4000/api/v1/login", {
+      const response = await axios.post("http://10.109.83.7:4000/api/v1/login", {
         Email: email,
         senha: password
       })
@@ -39,10 +39,6 @@ const Login = () => {
     }
 
   };
-  const handleNavigateToEsqueciSenha = () => {
-    navigation.navigate('EsqueciSenha'); // Navegar para a página "EsqueciSenha"
-  };
-
   
   return (
     <ScrollView contentContainerStyle={styles.container}>
@@ -70,10 +66,6 @@ const Login = () => {
         style={styles.button}
       >
         <Text style={styles.textoInput2}>Login</Text>
-      </TouchableOpacity>
-      
-      <TouchableOpacity onPress={handleNavigateToEsqueciSenha}>
-        <Text style={styles.forgotPassword}>Esqueci minha senha</Text>
       </TouchableOpacity>
       <TouchableOpacity onPress={handleNavigateToCadastro}>
           <Text style={styles.forgotPassword}>Cadastre-se</Text>
